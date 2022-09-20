@@ -7,8 +7,8 @@ class TestClearColor : public Test
 public:
 	TestClearColor();
 
-	void OnRender(Renderer& renderer) override;
-	void OnImGuiRender() override;
+	void OnRender(Window& window) override;
+	void OnImGuiRender(Window& window) override;
 
 private:
 	float m_ClearColor[4];

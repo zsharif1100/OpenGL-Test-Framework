@@ -4,12 +4,9 @@
 #include <GLFW/glfw3.h>
 #include "GLErrorManager.h"
 
-#include <array>
-#include <fstream>
-#include <string>
-#include <sstream>
-#include <cmath>
+#include <iostream>
 
+#include "Window.h"
 #include "Renderer.h"
 
 #include "imgui/imgui.h"
@@ -20,94 +17,74 @@
 #include "tests/TestSnake.h"
 
 
-void error_callback(int error, const char* description) {
-	fprintf(stderr, "error: %s\n", description);
-}
+
 
 int main() {
 
-	glfwSetErrorCallback(error_callback);
-	if (!glfwInit()) {
-		std::cout << "GLFW Initialization failed!" << std::endl;
-		return -1;
-	}
+	Renderer::Init();
 
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	bool fullscreen = false;
+	GLFWmonitor* primaryMonitor = fullscreen == true ? glfwGetPrimaryMonitor() : NULL;
 
-	GLFWwindow* window = glfwCreateWindow(1280, 720, "OpenGL", NULL, NULL);
-	if (!window) {
-		std::cout << "Window creation failed!" << std::endl;
-		glfwTerminate();
-		return -1;
-	}
-	glfwMakeContextCurrent(window);
-
-	glfwSwapInterval(1);
-
+	Window window(1280, 720, "OpenGL Test Framework");
+	//Window window(1920, 1080, "OpenGL Test Framework", primaryMonitor);
 
 	if (GLEW_OK != glewInit()) {
-		std::cout << "GLEW Initialization creation failed!" << std::endl;
+		std::cout << "GLEW Initialization failed!" << std::endl;
 		return -1;
 	}
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
-	{
 
-		Renderer renderer;
+	GLCall(glEnable(GL_BLEND));
+	GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)); //src RGBA is set to src alpha and dest RGBA is set to 1 - src alpha.
 
-		GLCall(glEnable(GL_BLEND));
-		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)); //src RGBA is set to src alpha and dest RGBA is set to 1 - src alpha.
 
-		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO(); (void)io;
-		ImGui_ImplGlfwGL3_Init(window, true);
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	ImGui_ImplGlfwGL3_Init(window.GetWindow(), true);
+	 
+	ImGui::StyleColorsDark();
 
-		ImGui::StyleColorsDark();
-		  
-		//Test implementation
+	//Test implementation
 
-		Test* currentTest = new TestSnake();
-		TestMenu* tMenu = new TestMenu(currentTest);
-		//currentTest = tMenu;
+	Test* currentTest = nullptr;
+	TestMenu* tMenu = new TestMenu(currentTest);
+	currentTest = tMenu;
 
-		tMenu->RegisterTest<TestClearColor>("Clear color");
-		tMenu->RegisterTest<TestSnake>("Snake Game");
+	//tMenu->RegisterTest<TestClearColor>("Clear color");
+	tMenu->RegisterTest<TestSnake>("Snake Game");
 
-		while (!glfwWindowShouldClose(window)) {
-			renderer.Clear();
-			ImGui_ImplGlfwGL3_NewFrame();
-			
+	while (!window.ShouldClose()) {
+		Renderer::Clear();
 
-			currentTest->OnRender(renderer);
-			currentTest->OnUpdate(window, 0.05f);
+		ImGui_ImplGlfwGL3_NewFrame();
 
-			currentTest->OnImGuiRender();
+		currentTest->OnRender(window);
+		currentTest->OnUpdate(window, 0.05f);
 
-			if (currentTest != tMenu)
+		currentTest->OnImGuiRender(window);
+		if (currentTest != tMenu)
+		{
+			if (window.GetKey(GLFW_KEY_ESCAPE))
 			{
-				if (glfwGetKey(window, GLFW_KEY_ESCAPE))
-				{
-					delete currentTest;
-					currentTest = tMenu;
-				}
+				delete currentTest;
+				currentTest = tMenu;
 			}
-
-			ImGui::Render();
-			ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
-
-			glfwSwapBuffers(window);
-			glfwPollEvents();
 		}
 
+		ImGui::Render();
+		ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
 
-		//Something here to delete everything?
-
+		window.SwapBuffers();
+		window.PollEvents();
 	}
 
+	delete tMenu;
 	ImGui_ImplGlfwGL3_Shutdown();
 	ImGui::DestroyContext();
-	glfwDestroyWindow(window);
-	glfwTerminate();
+
+	window.~Window();
+
+	Renderer::Shutdown();
 }

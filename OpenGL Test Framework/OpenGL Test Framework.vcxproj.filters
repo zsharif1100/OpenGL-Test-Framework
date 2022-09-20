@@ -66,6 +66,9 @@
     <ClCompile Include="src\tests\TestSnake.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\fragmentShader.frag" />
@@ -1408,6 +1411,9 @@
     <ClInclude Include="src\tests\TestSnake.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Window.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\title.png">
@@ -1417,6 +1423,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\textures\apple.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\textures\border.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

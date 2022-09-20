@@ -2,6 +2,9 @@
 
 #include "Test.h"
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 #include <array>
 #include <list>
 #include <queue>
@@ -43,22 +46,54 @@ public:
 	std::array<float, 16> GetVB();
 
 	bool SetPos(glm::vec2& newPos);
-	inline glm::vec2 GetPos() { return m_Pos; };
+	inline glm::vec2 GetPos() { return m_Pos; }
+	inline float GetWidth() { return m_Width; }
+	inline float GetHeight() { return m_Height; }
 };
 
 class TestSnake: public Test
 {
+public:
+	TestSnake();
+	static constexpr int StartSegmentCount = 3;
+	static constexpr int StarAppleCount = 3;
+
+	void RenderSnake();
+	void RenderApple();
+	void RenderBorder();
+	void RenderTitle();
+
+	void OnRender(Window& window) override;
+	void OnUpdate(Window& window, float dT) override;
+	void OnImGuiRender(Window& window) override;
+	//void OnImGuiRender() override;
+
+	void ChangeDir(const direction newDir);
+	bool Move();
+	bool HitsBorder();
+	void Grow();
+	void SpawnApple();
+	void UpdateApple();
+
+	void Restart();
+	void updateMoveBuffer(direction dir);
+
+	inline Segment& GetHead() { return m_Segments.front(); }
 private:
+
+
 	float m_Time;
 	bool m_Started;
 	bool m_ShouldRestart;
 	bool m_JustGrew;
+	Segment m_Title;
 	std::list<Segment> m_Segments;
+	std::list<Segment> m_Border;
 	std::list<Segment> m_Apples;
 
 	std::set<std::pair<float, float>> m_EmptySpace;
 	direction m_Direction;
-	const difficulty m_Difficulty = difficulty::HARD;
+	const difficulty m_Difficulty = difficulty::MEDIUM;
 	std::queue<direction> m_MoveBuffer;
 
 	std::unique_ptr<VertexBuffer> m_VBO;
@@ -73,26 +108,15 @@ private:
 	std::unique_ptr<Texture> m_TexSnake;
 	std::unique_ptr<Texture> m_TexTitle;
 	std::unique_ptr<Texture> m_TexApple;
+	std::unique_ptr<Texture> m_TexBorder;
 
+	const float m_SWidth = 1280.0f;
+	const float m_SHeight = 960.0f;
 
-	const glm::mat4 m_Proj = glm::ortho(0.0f, 1280.0f, 0.0f, 720.0f, -1.0f, 1.0f);
+	const glm::mat4 m_Proj = glm::ortho(0.0f, m_SWidth, 0.0f, m_SHeight, -1.0f, 1.0f);
 	const glm::mat4 m_View = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
-public:
-	TestSnake();
+	//const float m_SizeFactor = 15.0f;
+	const float m_Size = 40.0f; //SCONST::RSCREEN_RATIO * m_SizeFactor;
 
-	void OnRender(Renderer& renderer) override;
-	void OnUpdate(GLFWwindow* window, float dT) override;
-	//void OnImGuiRender() override;
-
-	void ChangeDir(const direction newDir);
-	bool Move();
-	void Grow();
-	void SpawnApple();
-	void UpdateApple();
-
-	void Restart();
-	void updateMoveBuffer(direction dir);
-
-	inline Segment& GetHead() { return m_Segments.front(); }
 };
 

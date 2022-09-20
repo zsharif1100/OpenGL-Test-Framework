@@ -153,11 +153,7 @@ unsigned int Shader::CreateShaderProgram(const std::string& vertexShader, const 
 	GLCall(glGetProgramiv(program, GL_VALIDATE_STATUS, &validated));
 	GLCall(glGetProgramiv(program, GL_LINK_STATUS, &linked));
 	if (!validated || !linked) {
-		int length;
-		GLCall(glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length));
-		char* message = (char*)alloca(length * sizeof(char));
-		GLCall(glGetProgramInfoLog(program, length, &length, message));
-		std::cout << "Failed to validate or link:\n" << message << std::endl;
+		std::cout << "Failed to validate or link:\n" << std::endl;
 		GLCall(glDeleteProgram(program));
 		return 0;
 	}

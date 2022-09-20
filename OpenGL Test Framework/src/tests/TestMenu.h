@@ -11,7 +11,7 @@ public:
 	TestMenu() = delete;
 	TestMenu(Test*& currentTest);
 
-	void OnImGuiRender() override;
+	void OnImGuiRender(Window& window) override;
 
 	inline Test*& CurrentTest() { return m_CurrentTest; }
 
