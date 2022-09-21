@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Test.h"
+#include "tests/Test.h"
 
 class TestClearColor : public Test
 {

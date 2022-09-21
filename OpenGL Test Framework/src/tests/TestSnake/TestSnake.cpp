@@ -215,10 +215,10 @@ void TestSnake::OnImGuiRender(Window& window)
 {
 	WindowData * wData = (WindowData*)glfwGetWindowUserPointer(window.GetWindow());
 
-	ImGui::SetNextWindowSize(ImVec2(wData->m_Width - wData->m_Width, wData->m_Height), ImGuiCond_Always);
-	ImGui::SetNextWindowPos(ImVec2(wData->m_Width, 0.0f), ImGuiCond_Always);
-	ImGui::Begin("Test");
-	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+	ImGui::SetNextWindowSize(ImVec2(wData->m_Width - wData->m_VPWidth, wData->m_Height), ImGuiCond_Always);
+	ImGui::SetNextWindowPos(ImVec2(wData->m_VPWidth, 0.0f), ImGuiCond_Always);
+	ImGui::Begin("Test", 0, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
+	ImGui::Text("Framerate: %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	ImGui::End();
 }
 

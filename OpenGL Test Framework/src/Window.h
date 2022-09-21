@@ -11,16 +11,22 @@ struct WindowData {
 	int m_Width;
 	int m_Height;
 
-	int vp_X;
-	int vp_Y;
-	int vp_Width;
-	int vp_Height;
+	int m_VPWidth;
+	int m_VPHeight;
+	int m_VPX;
+	int m_VPY;
 
 	WindowData(const char* title = "Default Window", int width = 1280, int height = 720) {
 		m_Title = title;
-		m_Width = vp_Width = width;
-		m_Height = vp_Height = height;
-		vp_X = vp_Y = 0;
+		m_Width = m_VPWidth = width;
+		m_Height = m_VPHeight = height;
+		m_VPX = m_VPY = 0;
+	}
+
+	void  setData(int width, int height, int vpX, int vpY, int vpWidth, int vpHeight) {
+		m_Width = width; m_Height = height;
+		m_VPWidth = vpWidth; m_VPHeight = vpHeight;
+		m_VPX = vpX; m_VPY = vpY;
 	}
 };
 

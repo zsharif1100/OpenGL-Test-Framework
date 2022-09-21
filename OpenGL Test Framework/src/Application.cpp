@@ -7,17 +7,14 @@
 #include <iostream>
 
 #include "Window.h"
-#include "Renderer.h"
+#include "Renderer/Renderer.h"
 
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw_gl3.h"
 
-#include "tests/TestMenu.h"
-#include "tests/TestClearColor.h"
-#include "tests/TestSnake.h"
-
-
-
+#include "tests/TestMenu/TestMenu.h"
+#include "tests/TestClearColor/TestClearColor.h"
+#include "tests/TestSnake/TestSnake.h"
 
 int main() {
 
@@ -28,13 +25,6 @@ int main() {
 
 	Window window(1280, 720, "OpenGL Test Framework");
 	//Window window(1920, 1080, "OpenGL Test Framework", primaryMonitor);
-
-	if (GLEW_OK != glewInit()) {
-		std::cout << "GLEW Initialization failed!" << std::endl;
-		return -1;
-	}
-	std::cout << glGetString(GL_VERSION) << std::endl;
-
 
 	GLCall(glEnable(GL_BLEND));
 	GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)); //src RGBA is set to src alpha and dest RGBA is set to 1 - src alpha.

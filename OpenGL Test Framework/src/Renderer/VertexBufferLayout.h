@@ -22,10 +22,7 @@ public:
 	//~VertexBufferLayout();
 
 	template<typename T>
-	void Push(unsigned int count) 
-	{
-		static_assert(false);
-	}
+	void Push(unsigned int count) = delete;
 
 	template<>
 	void Push<unsigned int>(unsigned int count)
