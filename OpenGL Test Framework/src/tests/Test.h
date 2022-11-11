@@ -1,17 +1,19 @@
 #pragma once
 
-#include <vector>
-#include <string>
-
 #include "Window.h"
 #include "Renderer/Renderer.h"
+#include "glm/glm.hpp"
+
+#include "Renderer/Camera/CameraOrthographic.h"
+#include "Renderer/Camera/CameraPerspective.h"
+
 
 class Test {
 public:
 	Test() {}
 	virtual ~Test() {}
 
-	virtual void OnUpdate(Window& window, float dT) {}
-	virtual void OnRender(Window& Window) {}
-	virtual void OnImGuiRender(Window& window) {}
+	virtual void OnUpdate(float dT) {}
+	virtual void OnRender() {}
+	virtual void OnImGuiRender() {}
 };

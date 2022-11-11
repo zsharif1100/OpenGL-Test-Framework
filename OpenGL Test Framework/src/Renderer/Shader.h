@@ -4,11 +4,11 @@
 #include <unordered_map>
 #include "glm/glm.hpp"	
 
-struct ShaderSource 
+struct ShaderSource
 {
 	std::string vertexSource;
 	std::string fragmentSource;
-	
+	std::string geometrySource;
 };
 
 class Shader
@@ -20,7 +20,9 @@ private:
 
 	ShaderSource ParseShader(std::string filepath);
 	unsigned int CompileShader(unsigned int type, const std::string& source);
-	unsigned int CreateShaderProgram(const std::string& vertexShader, const std::string& fragmentShader);
+	unsigned int CreateShaderProgram(const std::string& vertexShader, 
+		const std::string& fragmentShader, const std::string& geometryShader = "");
+
 public:
 
 	Shader() = delete;
@@ -30,12 +32,15 @@ public:
 	void Unbind() const;
 	unsigned int GetID() const;
 
-	void ReloadShader(const std::string& filepath);
-
 	int GetUniformLocation(const std::string& name);
+
 	void SetUniform1i(const std::string& name, int v0);
 	void SetUniform1f(const std::string& name, float v0);
-	void SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3);
-	void SetUniformMat4f(const std::string& name, glm::mat4& matrix);
-};
 
+	void SetUniform1iv(const std::string& name, unsigned int count, const int* v);
+	void SetUniform1fv(const std::string& name, unsigned int count, const float* v);
+
+	void SetUniform3f(const std::string& name, float v0, float v1, float v2);
+	void SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3);
+	void SetUniformMat4f(const std::string& name, const glm::mat4& matrix);
+};

@@ -3,8 +3,6 @@
 #include "GLErrorManager.h"
 #include "Renderer/Renderer.h"
 
-#include <iostream>
-
 static bool glew_Initialised = false;
 
 void OnResizeInternal(GLFWwindow* window, int width, int height)
@@ -29,16 +27,22 @@ void OnResizeInternal(GLFWwindow* window, int width, int height)
 		excessWidth = 0;
 	}
 
-	int vpWidth = reducedWidth - excessWidth;
-	int vpHeight = height - excessHeight;
+	int vpWidth = abs(reducedWidth - excessWidth);
+	int vpHeight = abs(height - excessHeight);
 	int vpX = 0;
 	int vpY = excessHeight;
 
 	GLCall(glViewport(vpX, vpY, vpWidth, vpHeight));
 
-	WindowData* wData = (WindowData * )glfwGetWindowUserPointer(window);
+	WindowData* wData = (WindowData*)glfwGetWindowUserPointer(window);
 
 	wData->setData(width, height, vpX, vpY, vpWidth, vpHeight);
+}
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	WindowData* wData = (WindowData*)glfwGetWindowUserPointer(window);
+	wData->addScroll(yoffset);
 }
 
 Window::Window(int width, int height, const char* title, GLFWmonitor* monitor, GLFWwindow* share)
@@ -49,18 +53,23 @@ Window::Window(int width, int height, const char* title, GLFWmonitor* monitor, G
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	m_Window = glfwCreateWindow(width, height, title, monitor, share);
-	glfwSetWindowSizeLimits(m_Window, 1280, 720, GLFW_DONT_CARE, GLFW_DONT_CARE);
+	glfwSetWindowSizeLimits(m_Window, width, height, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
 
 	this->MakeContextCurrent();
 	glfwSwapInterval(0);
 
-	//glfwSetWindowSizeCallback(m_Window, OnResizeInternal);
+
 
 	glfwSetWindowUserPointer(m_Window, &m_Data);
 
 	OnResizeInternal(m_Window, m_Data.m_Width, m_Data.m_Height);
+
+	glfwSetScrollCallback(m_Window, scroll_callback);
+	
 	glfwSetFramebufferSizeCallback(m_Window, OnResizeInternal);
+	//glfwSetWindowSizeCallback(m_Window, OnResizeInternal);
+
 
 	if (!glew_Initialised) {
 		if (GLEW_OK != glewInit()) {
@@ -103,13 +112,3 @@ void Window::PollEvents() const
 {
 	glfwPollEvents();
 }
-
-int Window::GetKey(const int& key) const
-{
-	return glfwGetKey(m_Window, key);
-}
-
-//void Window::OnResize()
-//{
-//
-//}

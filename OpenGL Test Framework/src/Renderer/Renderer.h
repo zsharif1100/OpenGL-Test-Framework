@@ -2,11 +2,17 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include "Window.h"
 
 #include "VertexArray.h"
 #include "IndexBuffer.h"
 #include "Texture.h"
 #include "Shader.h"
+
+#include "Camera/Camera.h"
+
+#include "Primitives/Quad.h"
+#include "Primitives/Cube.h"
 
 //namespace SCONST {
 //	static constexpr float MULTIPLIER = 1.0f;
@@ -31,20 +37,35 @@
 //	//													RSCREEN_HEIGHT_BEGIN + RSCREEN_HEIGHT / 2);
 //}
 
+
+enum class Material {
+	Default = 0,
+	LightSource = 1,
+	Reflective = 2
+};
+
+
 class Renderer
 {
 private:
-
+	static void BeginScene();
 public:
 
 	static void Init();
+	static void InitData();
+	static void ResetData();
 	static void Shutdown();
 
-	static void DrawQuad(float x, float y, float width, float height, float c0, float c1, float c2, float c3, float t0, float t1, float tID);
+	static void BeginScene(const Camera& camera);
+
+	//static void DrawTriangle(const Triangle& tri);
+	static void DrawQuad(const Quad& quad, Material material = Material::Default);
+	static void DrawCube(const Cube& cube, Material material = Material::Reflective);
+	static void DrawCubeLight(const Cube& cube);
+	static void EndScene();
+
 
 	static void Clear();
 	static void Draw(const Shader& shader, const VertexArray& vao, const IndexBuffer& ibo);
-
-
 
 };

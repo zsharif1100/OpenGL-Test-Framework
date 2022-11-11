@@ -164,11 +164,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Renderer\Primitives\Cube.cpp" />
+    <ClCompile Include="src\Renderer\Camera\CameraPerspective.cpp" />
+    <ClCompile Include="src\Renderer\Camera\CameraOrthographic.cpp" />
+    <ClCompile Include="src\Renderer\Primitives\Quad.cpp" />
     <ClCompile Include="src\GLErrorManager.cpp" />
     <ClCompile Include="src\Renderer\Shader.cpp" />
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Renderer\IndexBuffer.cpp" />
     <ClCompile Include="src\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\tests\Test3DRenderer\Test3DRenderer.cpp" />
+    <ClCompile Include="src\tests\TestSnakeBatch\TestSnakeBatch.cpp" />
     <ClCompile Include="src\vendor\glm\detail\glm.cpp" />
     <ClCompile Include="src\vendor\imgui\imgui.cpp" />
     <ClCompile Include="src\vendor\imgui\imgui_demo.cpp" />
@@ -182,11 +188,13 @@
     <ClCompile Include="src\tests\TestClearColor\TestClearColor.cpp" />
     <ClCompile Include="src\tests\TestSnake\TestSnake.cpp" />
     <ClCompile Include="src\Window.cpp" />
+    <ClCompile Include="src\tests\Test2DRenderer\Test2DRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\shaders\fragmentShader.frag" />
-    <None Include="res\shaders\Shader1.shader" />
-    <None Include="res\shaders\vertexShader.vert" />
+    <None Include="res\shaders\lighting.shader" />
+    <None Include="res\shaders\lightSource.shader" />
+    <None Include="res\shaders\shader1.shader" />
+    <None Include="res\shaders\default.shader" />
     <None Include="src\vendor\glm\detail\func_common.inl" />
     <None Include="src\vendor\glm\detail\func_common_simd.inl" />
     <None Include="src\vendor\glm\detail\func_exponential.inl" />
@@ -328,11 +336,20 @@
     <None Include="src\vendor\glm\gtx\wrap.inl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Renderer\Camera\Camera.h" />
+    <ClInclude Include="src\Renderer\Camera\Frustum.h" />
+    <ClInclude Include="src\Renderer\Primitives\Cube.h" />
+    <ClInclude Include="src\Renderer\Camera\CameraPerspective.h" />
+    <ClInclude Include="src\Renderer\Camera\CameraOrthographic.h" />
+    <ClInclude Include="src\Renderer\Primitives\Quad.h" />
     <ClInclude Include="src\GLErrorManager.h" />
     <ClInclude Include="src\Renderer\Shader.h" />
     <ClInclude Include="src\Renderer\IndexBuffer.h" />
     <ClInclude Include="src\Renderer\Renderer.h" />
     <ClInclude Include="src\tests\Test.h" />
+    <ClInclude Include="src\tests\Test3DRenderer\Test3DRenderer.h" />
+    <ClInclude Include="src\tests\TestSnake\GameHelper.h" />
+    <ClInclude Include="src\tests\TestSnakeBatch\TestSnakeBatch.h" />
     <ClInclude Include="src\vendor\glm\common.hpp" />
     <ClInclude Include="src\vendor\glm\detail\compute_common.hpp" />
     <ClInclude Include="src\vendor\glm\detail\compute_vector_relational.hpp" />
@@ -635,11 +652,14 @@
     <ClInclude Include="src\tests\TestClearColor\TestClearColor.h" />
     <ClInclude Include="src\tests\TestSnake\TestSnake.h" />
     <ClInclude Include="src\Window.h" />
+    <ClInclude Include="src\tests\Test2DRenderer\Test2DRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\apple.png" />
+    <Image Include="res\textures\blender_suzanne.jpg" />
     <Image Include="res\textures\border.png" />
     <Image Include="res\textures\segment.png" />
+    <Image Include="res\textures\segment_clear.png" />
     <Image Include="res\textures\title.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

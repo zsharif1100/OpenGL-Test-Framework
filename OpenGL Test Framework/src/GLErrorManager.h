@@ -11,3 +11,4 @@ void GLClearError();
 
 bool GLLogError(const char* function, const char* file, int line);
 
+int getRandomInt(int x, int y);

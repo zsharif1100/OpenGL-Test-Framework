@@ -5,12 +5,13 @@
 class TestClearColor : public Test
 {
 public:
-	TestClearColor();
+	TestClearColor(Window* window);
 
-	void OnRender(Window& window) override;
-	void OnImGuiRender(Window& window) override;
+	void OnRender() override;
+	void OnImGuiRender() override;
 
 private:
+	Window* m_Window;
 	float m_ClearColor[4];
 };
 
