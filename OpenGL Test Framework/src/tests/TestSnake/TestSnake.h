@@ -11,20 +11,7 @@
 #include <set>
 #include <memory>
 
-enum class direction {
-	LEFT, DOWN, RIGHT, UP
-};
-
-enum class difficulty {
-	EASY = 150, MEDIUM = 100, HARD = 75, EXTREME = 50
-};
-
-static const glm::vec2 dirVectors[4] = {
-	{-1.0f, 0.0f },
-	{ 0.0f,-1.0f },
-	{ 1.0f, 0.0f },
-	{ 0.0f, 1.0f },
-};
+#include "GameHelper.h"
 
 class Segment
 {
@@ -54,18 +41,18 @@ public:
 class TestSnake: public Test
 {
 public:
-	TestSnake();
+	TestSnake(Window* window);
 	static constexpr int StartSegmentCount = 3;
-	static constexpr int StarAppleCount = 3;
+	static constexpr int StartAppleCount = 3;
 
 	void RenderSnake();
 	void RenderApple();
 	void RenderBorder();
 	void RenderTitle();
 
-	void OnRender(Window& window) override;
-	void OnUpdate(Window& window, float dT) override;
-	void OnImGuiRender(Window& window) override;
+	void OnRender() override;
+	void OnUpdate(float dT) override;
+	void OnImGuiRender() override;
 	//void OnImGuiRender() override;
 
 	void ChangeDir(const direction newDir);
@@ -80,7 +67,8 @@ public:
 
 	inline Segment& GetHead() { return m_Segments.front(); }
 private:
-
+	Window* m_Window;
+	WindowData* m_WindowData;
 
 	float m_Time;
 	bool m_Started;
@@ -90,6 +78,9 @@ private:
 	std::list<Segment> m_Segments;
 	std::list<Segment> m_Border;
 	std::list<Segment> m_Apples;
+
+	int m_Score = 0;
+	int m_Highscore = 0;
 
 	std::set<std::pair<float, float>> m_EmptySpace;
 	direction m_Direction;

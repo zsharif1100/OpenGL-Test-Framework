@@ -6,18 +6,7 @@
 
 #include "imgui/imgui.h"
 
-#include <random>
 #include <iostream>
-
-int getRandomInt(int x, int y)
-{
-	std::random_device randomSeed;
-
-	std::mt19937 randomGenerator(randomSeed());
-	std::uniform_int_distribution<int> distribution(x, y);
-
-	return distribution(randomGenerator);
-}
 
 Segment::Segment(float x, float y, float width, float height)
 	:m_Pos(x, y),
@@ -42,6 +31,7 @@ bool Segment::SetPos(glm::vec2& newPos)
 	//if (newPos.x < 0.0f || newPos.x > m_SWidth || newPos.y < 0.0f || newPos.y > m_SHeight) {
 	//	return false;
 	//}
+
 	if (newPos.x < 0.0f) {
 		newPos.x = 1280.0f - Segment::m_Width / 2;
 	}
@@ -59,17 +49,19 @@ bool Segment::SetPos(glm::vec2& newPos)
 	return true;
 }
 
-TestSnake::TestSnake()
-	:m_Time(0),
+TestSnake::TestSnake(Window* window)
+	:m_Window(window), 
+	m_WindowData(m_Window->GetWindowData()), 
+	m_Time(0),
 	m_Title(1280.0f / 2.0f, 960.0f / 2.0f, 1280.0f / 1.5f, 960.0f / 2.0f)
 {
-	//GLCall(glViewport(SCONST::RSCREEN_WIDTH_BEGIN, SCONST::RSCREEN_HEIGHT_BEGIN, m_SWidth, m_SHeight))
-
 	for (float i = 0; i < 2; i++) {
+		//top & bottom walls
 		for (float x = 0.0f + m_Size / 2; x <= m_SWidth - m_Size / 2; x += m_Size) {
 			m_Border.emplace_back(x, 0.0f + m_Size / 2 + i * (m_SHeight - m_Size),m_Size, m_Size);
 		}
 
+		//left & right walls
 		for (float y = 0.0f + m_Size / 2; y <= m_SHeight - m_Size / 2; y += m_Size) {
 			m_Border.emplace_back(0.0f + m_Size / 2 + i * (m_SWidth - m_Size), y, m_Size, m_Size);
 		}
@@ -97,7 +89,7 @@ TestSnake::TestSnake()
 	m_IBO = std::make_unique<IndexBuffer>(Segment::m_IB, Segment::m_Count);
 	m_IBO->Bind();
 
-	m_Shader = std::make_unique<Shader>("../../../OpenGL Test Framework/res/shaders/Shader1.shader");
+	m_Shader = std::make_unique<Shader>("../../../OpenGL Test Framework/res/shaders/shader1.shader");
 
 	m_TexSnake = std::make_unique<Texture>("../../../OpenGL Test Framework/res/textures/segment.png");
 	m_TexTitle = std::make_unique<Texture>("../../../OpenGL Test Framework/res/textures/title.png");
@@ -114,8 +106,7 @@ void TestSnake::RenderSnake()
 	for (auto& segment : m_Segments) {
 		glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(segment.GetPos(), 0.0f));
 		glm::mat4 mvp = m_Proj * m_View * model;
-		m_Shader->Bind();
-		m_Shader->SetUniformMat4f("u_MVP", mvp); //MVP = model view projection
+		m_Shader->SetUniformMat4f("u_MVP", mvp);
 		Renderer::Draw(*m_Shader, *m_VAO, *m_IBO);
 	}
 }
@@ -127,7 +118,7 @@ void TestSnake::RenderApple()
 		glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(apple.GetPos(), 0.0f));
 		glm::mat4 mvp = m_Proj * m_View * model;
 		m_Shader->Bind();
-		m_Shader->SetUniformMat4f("u_MVP", mvp); //MVP = model view projection
+		m_Shader->SetUniformMat4f("u_MVP", mvp);
 		Renderer::Draw(*m_Shader, *m_VAO, *m_IBO);
 	}
 }
@@ -139,7 +130,7 @@ void TestSnake::RenderBorder()
 		glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(segment.GetPos(), 0.0f));
 		glm::mat4 mvp = m_Proj * m_View * model;
 		m_Shader->Bind();
-		m_Shader->SetUniformMat4f("u_MVP", mvp); //MVP = model view projection
+		m_Shader->SetUniformMat4f("u_MVP", mvp);
 		Renderer::Draw(*m_Shader, *m_VAO, *m_IBO);
 	}
 }
@@ -154,7 +145,7 @@ void TestSnake::RenderTitle()
 	Renderer::Draw(*m_Shader, *m_VAO, *m_IBO);
 }
 
-void TestSnake::OnRender(Window&)
+void TestSnake::OnRender()
 {
 	if (!m_Started) {
 		this->RenderTitle();
@@ -167,10 +158,10 @@ void TestSnake::OnRender(Window&)
 	this->RenderApple();
 }
 
-void TestSnake::OnUpdate(Window& window, float dT)
+void TestSnake::OnUpdate(float dT)
 {
 	if (!m_Started) {
-		if (window.GetKey(GLFW_KEY_SPACE)) {
+		if (m_Window->GetKey(GLFW_KEY_SPACE)) {
 			m_Started = true;
 			m_TexSnake->Bind();
 			m_VAO->AddBuffer(*m_VBO, *m_Layout);
@@ -180,22 +171,23 @@ void TestSnake::OnUpdate(Window& window, float dT)
 	}
 
 	//keyboard press logic
-	if (window.GetKey(GLFW_KEY_LEFT)) {
+	if (m_Window->GetKey(GLFW_KEY_LEFT)) {
 		this->updateMoveBuffer(direction::LEFT);
 	}
-	else if (window.GetKey(GLFW_KEY_RIGHT)) {
+	else if (m_Window->GetKey(GLFW_KEY_RIGHT)) {
 		this->updateMoveBuffer(direction::RIGHT);
 	}
-	else if (window.GetKey(GLFW_KEY_UP)) {
+	else if (m_Window->GetKey(GLFW_KEY_UP)) {
 		this->updateMoveBuffer(direction::UP);
 	}
-	else if (window.GetKey(GLFW_KEY_DOWN)) {
+	else if (m_Window->GetKey(GLFW_KEY_DOWN)) {
 		this->updateMoveBuffer(direction::DOWN);
 	}
 
 	float currentTime = (float)glfwGetTime();
 	float elapsed = currentTime - m_Time;
 	float multiplier = (float)m_Difficulty / 100.0f;
+
 	//per Move logic
 	if (elapsed > dT * multiplier ) {
 		if (!this->Move() || this->HitsBorder()) {
@@ -211,14 +203,15 @@ void TestSnake::OnUpdate(Window& window, float dT)
 
 }
 
-void TestSnake::OnImGuiRender(Window& window)
+void TestSnake::OnImGuiRender()
 {
-	WindowData * wData = (WindowData*)glfwGetWindowUserPointer(window.GetWindow());
+	ImGui::SetNextWindowSize(ImVec2((float)m_WindowData->m_Width - m_WindowData->m_VPWidth, (float)m_WindowData->m_Height), ImGuiCond_Always);
+	ImGui::SetNextWindowPos(ImVec2((float)m_WindowData->m_VPWidth, 0.0f), ImGuiCond_Always);
 
-	ImGui::SetNextWindowSize(ImVec2(wData->m_Width - wData->m_VPWidth, wData->m_Height), ImGuiCond_Always);
-	ImGui::SetNextWindowPos(ImVec2(wData->m_VPWidth, 0.0f), ImGuiCond_Always);
 	ImGui::Begin("Test", 0, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
 	ImGui::Text("Framerate: %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+	ImGui::Text("Score: %i", m_Score);
+	ImGui::Text("Highscore: %i", m_Highscore);
 	ImGui::End();
 }
 
@@ -256,7 +249,7 @@ bool TestSnake::Move()
 		m_MoveBuffer.pop();
 	}
 
-	glm::vec2 newHeadPos = head.GetPos() + dirVectors[(int)m_Direction] * glm::vec2(head.m_Width, head.m_Height);
+	glm::vec2 newHeadPos = head.GetPos() + glm::vec2(dirVectors[(int)m_Direction].x, dirVectors[(int)m_Direction].y) * glm::vec2(head.m_Width, head.m_Height);
 
 	//self-collision check
 	for (auto segment = std::next(m_Segments.begin()); segment != m_Segments.end(); segment++) {
@@ -312,7 +305,6 @@ void TestSnake::Grow()
 	m_JustGrew = true;
 }
 
-
 void TestSnake::SpawnApple()
 {
 	int max = m_EmptySpace.size() - 1;
@@ -337,6 +329,8 @@ void TestSnake::UpdateApple()
 			m_Apples.erase(appleIt);
 			this->Grow();
 			this->SpawnApple();
+
+			m_Score++;
 			break;
 		}
 	}
@@ -360,23 +354,23 @@ void TestSnake::Restart()
 		m_EmptySpace.erase(std::make_pair(pos.x, pos.y));
 	}
 
-	//while (!m_MoveBuffer.empty()) {
-	//	m_MoveBuffer.pop();
-	//} 
 	m_MoveBuffer = {};
 	m_Apples.clear();
 	m_Segments.clear();
 	m_Direction = direction::LEFT;
 
+	if (m_Score > m_Highscore)
+		m_Highscore = m_Score;
+	m_Score = 0;
+
 	m_Segments.emplace_back((0.0f + m_Size / 2.0f) + m_SWidth / 2.0f, (0.0f + m_Size / 2.0f) + m_SHeight / 2.0f, m_Size, m_Size);
 
-	//m_Segments.emplace_back(Segment(0.0f + m_Size / 2.0f, SCONST::RSCREEN_MIDDLE.y, m_Size, m_Size));
 	for (int i = 0; i < StartSegmentCount - 1; i++) {
 		this->Grow();
 		this->Move();
 	};
 
-	for (int i = 0; i < StarAppleCount; i++) {
+	for (int i = 0; i < StartAppleCount; i++) {
 		this->SpawnApple();
 	};
 }

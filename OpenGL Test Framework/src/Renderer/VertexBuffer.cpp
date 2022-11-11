@@ -1,15 +1,19 @@
 #include "VertexBuffer.h"
 
-#include <GL/glew.h>
 #include "GLErrorManager.h"
 
-VertexBuffer::VertexBuffer(const float data[], const unsigned int size)
+VertexBuffer::VertexBuffer(const float data[], const unsigned int size, GLenum usage)
 {
 	GLCall(glGenBuffers(1, &m_RendererID));
 	GLCall(glBindBuffer(GL_ARRAY_BUFFER, m_RendererID));
-	GLCall(glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW));
+	GLCall(glBufferData(GL_ARRAY_BUFFER, size, data, usage));
 }
 
+void VertexBuffer::updateBuffer(const float data[], unsigned int size, unsigned int offset) 
+{
+	GLCall(glBindBuffer(GL_ARRAY_BUFFER, m_RendererID));
+	GLCall(glBufferSubData(GL_ARRAY_BUFFER, offset, size, data));
+}
 VertexBuffer::~VertexBuffer()
 {
 	GLCall(glDeleteBuffers(1, &m_RendererID));

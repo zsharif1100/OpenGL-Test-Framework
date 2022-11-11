@@ -3,8 +3,10 @@
 #include <iostream>
 
 #include <map>
+#include <random>
 
 static const std::map<GLenum, std::string> codeToMessage = {
+	{GL_NO_ERROR, "GL_NO_ERROR"},
 	{GL_INVALID_ENUM, "GL_INVALID_ENUM"},
 	{GL_INVALID_VALUE, "GL_INVALID_VALUE"},
 	{GL_INVALID_OPERATION, "GL_INVALID_OPERATION"},
@@ -16,7 +18,11 @@ static const std::map<GLenum, std::string> codeToMessage = {
 
 void GLClearError()
 {
-	while (glGetError() != GL_NO_ERROR);
+	GLenum error = glGetError();
+	while (error != GL_NO_ERROR) {
+		std::cout << codeToMessage.at(error);
+		error = glGetError();
+	}
 }
 
 bool GLLogError(const char* function, const char* file, int line)
@@ -28,4 +34,14 @@ bool GLLogError(const char* function, const char* file, int line)
 		return false;
 	}
 	return true;
+}
+
+int getRandomInt(int x, int y)
+{
+	std::random_device randomSeed;
+
+	std::mt19937 randomGenerator(randomSeed());
+	std::uniform_int_distribution<int> distribution(x, y);
+
+	return distribution(randomGenerator);
 }
